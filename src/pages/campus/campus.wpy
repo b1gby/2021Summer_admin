@@ -1,0 +1,234 @@
+<style>
+.DeleteButton{
+    color: red;
+}
+</style>
+
+<template>
+    <view class="flex bg-white align-center">
+        <view class="padding flex-sub text-left">
+            <button class="cu-btn bg-green shadow" wx:if="{{isClickCreateCampus || isClickEditCampus}}" @tap="onClickCancel">取消</button>
+        </view>
+        <view class="padding flex-sub text-center text-black text-lg text-bold">
+            校区列表
+        </view>
+        <view class="padding flex flex-sub justify-end">
+            <button class="cu-btn bg-green shadow" wx:if="{{isClickCreateCampus || isClickEditCampus}}" @tap="onClickSubmit">完成</button>
+        </view>
+    </view>
+
+    <view class="cu-card">
+        <view class="cu-item margin-top-xl margin-bottom-xl">
+            <view class="cu-list menu card-menuradius shadow">
+                <view class="cu-item flex align-center" wx:for="{{campusList}}" wx:key="index" wx:for-item="campus" data-id="{{index}}">
+                    <view class="flex-sub">
+                        <mp-slideview buttons="{{slideButtons}}" bindbuttontap="slideButtonTap" data-id="{{index}}">
+                            <view class="text-center" wx:if="{{!isClickEditCampus}}">{{campus.Cname}}</view>
+                            <input class="text-center" wx:else @input="inputChange" value="{{campus.Cname}}" data-id="{{index}}"></input>
+                        </mp-slideview>
+                    </view>
+                    
+                </view>
+                <view class="cu-item flex align-center" wx:if="{{isClickCreateCampus}}">
+                    <input class="flex-sub text-center" @input="inputChangeCreateCampus" focus="{{isClickCreateCampus}}"></input>
+                </view>
+            </view>
+        </view>
+
+        <block wx:if="{{!(isClickCreateCampus || isClickEditCampus)}}">
+            <view class="cu-item margin-top-xl margin-bottom-xl">
+                <view class="flex align-center">
+                    <button class="flex-sub text-center cu-btn bg-{{isClickCreateCampus?'grey':'green'}}" @tap="onClickCreateCampus">添加校区</button>
+                </view>
+                
+            </view>
+
+            <view class="cu-item margin-top-xl margin-bottom-xl">
+                <view class="flex align-center">
+                    <button class="flex-sub text-center cu-btn bg-{{isClickEditCampus?'grey':'green'}}" @tap="onClickEditCampus">编辑校区</button>
+                </view>
+                
+            </view>
+        </block>
+        
+    </view>
+
+    <mp-dialog title="删除校区" show="{{dialogShow}}" bindbuttontap="tapDeleteDialogButton" buttons="{{buttons}}" @close="dialogClose">
+      <view>确定要删除此条记录吗？</view>
+    </mp-dialog>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Index extends wepy.page{
+    config = {
+        "usingComponents": {
+            "mp-slideview": "weui-miniprogram/slideview/slideview",
+            "mp-dialog": "/miniprogram_npm/weui-miniprogram/dialog/dialog",
+        }
+    }
+
+    data = {
+        campusList:[],
+        campusId: -1,
+        isClickCreateCampus: false,
+        isClickEditCampus: false,
+        slideButtons: [{
+                type: 'warn',
+                text: '删除',
+                extClass: 'DeleteButton',
+            }],
+        buttons: [{
+                text: '取消',
+            },{
+                text: '确定',
+                extClass: 'DeleteButton',
+            }],
+        dialogShow: false,
+        deleteIndex:-1,
+        insertCampusData:null,
+        copyCampusList:[]
+    }
+    
+    methods = {
+        onClickCreateCampus(){
+            let self = this
+            self.isClickCreateCampus = true
+        },
+
+        onClickEditCampus(){
+            let self = this
+            self.isClickEditCampus = true
+        },
+
+        inputChange(e) {
+            let self = this
+            self.copyCampusList[e.currentTarget.dataset.id].Cname = e.detail.value.trim()
+        },
+
+        inputChangeCreateCampus(e){
+            let self = this
+            self.insertCampusData = e.detail.value.trim()
+        },
+
+        onClickCancel(){
+            let self = this
+            self.isClickEditCampus = false
+            self.isClickCreateCampus = false
+        },
+
+        onClickSubmit(){
+            let self = this
+            if(self.isClickCreateCampus){
+                self.createCampus(self.insertCampusData)
+                self.isClickCreateCampus = false
+                
+            }
+            if(self.isClickEditCampus){
+                let self = this
+                self.editCampus()
+                self.isClickEditCampus = false
+                
+            }
+        },
+
+        slideButtonTap(e) {
+            let self = this
+            self.deleteIndex = e.currentTarget.dataset.id
+            self.dialogShow = true
+        },
+
+        tapDeleteDialogButton(e) {
+            let self = this
+            self.dialogShow = false
+            if (e.detail.index == 1) {
+                self.deleteCampus()
+                self.getCampusData()
+            }
+        },
+
+        dialogClose(e){
+            let self = this
+            self.dialogShow = false
+        },
+    }
+
+    createCampus(cname) {
+        let self = this
+
+        wepy.request({
+                url:wepy.$instance.globalData.serverUrl + '/app/admin/insert_campus',
+                method:'POST',
+                header: wepy.$instance.setHeader(),
+                data: {
+                    'Cname':cname
+                },
+                success: function(res) {
+                    console.log(res)
+                    if (res.data.Code == 1){
+                        console.log("Insert Campus Success!")
+                        self.getCampusData()
+                    }
+                }
+            })
+    }
+
+    editCampus(cid,cname) {
+        let self = this
+
+        wepy.request({
+                url:wepy.$instance.globalData.serverUrl + '/app/admin/edit_campus',
+                method:'PUT',
+                header: wepy.$instance.setHeader(),
+                data: self.copyCampusList,
+                success: function(res) {
+                    console.log(res)
+                    if (res.data.Code == 1){
+                        console.log("Edit Campus Success!")
+                        self.getCampusData()
+                    }
+                }
+            })
+    }
+
+    deleteCampus() {
+        let self = this
+
+        wepy.request({
+                url:wepy.$instance.globalData.serverUrl + '/app/admin/delete_campus/:id' + '?Cid=' + self.campusList[self.deleteIndex].Cid.toString(),
+                method:'DELETE',
+                header: wepy.$instance.setHeader(),
+                success: function(res) {
+                    console.log(res)
+                    if (res.data.Code == 1){
+                        console.log("Delete Campus Success!")
+                    }
+                }
+            })
+    }
+
+    getCampusData() {
+        let self = this
+        
+        wepy.request({
+                url:wepy.$instance.globalData.serverUrl + '/app/admin/get_campus_list',
+                method:'GET',
+                header: wepy.$instance.setHeader(),
+                
+                success: function(res) {
+                    console.log(res)
+                    if (res.data.Code == 1){
+                        self.campusList = res.data.Data
+                        self.copyCampusList = JSON.parse(JSON.stringify(self.campusList)) //深拷贝
+                        self.$apply()
+                    }
+                }
+            })
+    }
+
+    onShow() {
+        let self = this
+        self.getCampusData()
+    }
+}
+</script>

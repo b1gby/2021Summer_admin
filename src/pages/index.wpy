@@ -1,0 +1,168 @@
+<style>
+
+</style>
+
+<template>
+	<view class="cu-card">
+		<view class="cu-item shadow radius">
+			<view class="flex align-center" @tap="onClickLogin">
+				<image style="width:50rpx;height:50rpx" class="margin margin-lr" src="{{userInfo==null?adminIconNoLogin:adminIconLogin}}" background-size="cover"/>
+				<view class="margin">
+                    <view class="text-black text-xl text-bold">管理员{{ userInfo==null?'未登录':userInfo.Aname}}</view>
+                </view>   
+			</view>
+		</view>
+		<view wx:if="{{userInfo!=null}}" class="cu-item margin-top-xl margin-bottom-xl">
+            <view class="cu-list menu card-menuradius shadow">
+                <view class="cu-item arrow">
+                    <view class="content" data-url="student/student" @tap="onClick">
+                        <view>学生管理</view>
+                    </view>
+                </view>
+                <view class="cu-item arrow">
+                    <view class="content" data-url="teacher/teacher" @tap="onClick">
+                        <view>老师管理</view>
+                    </view>
+                </view>
+				<view class="cu-item arrow">
+                    <view class="content" data-url="campus/campus" @tap="onClick">
+                        <view>校区管理</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+		<view wx:if="{{userInfo!=null}}" class="cu-item margin-top-xl margin-bottom-xl">
+			<view class="cu-item arrow">
+				<view class="cu-list menu card-menuradius shadow">
+					<view class="cu-item arrow">
+						<view class="content">
+							<view>预约家教信息</view>
+						</view>
+					</view>
+				</view>
+				<view class="cu-list menu card-menuradius shadow">
+					<view class="cu-item flex align-center" wx:for="{{orderTeacherList}}" wx:key="index" wx:for-item="order" data-id="{{index}}" @tap="onClickOrder">
+						<view class="flex-sub">
+							<view class="text-center">{{order.OTcontactName}}</view>
+						</view>
+						<view class="flex-sub">
+							<view class="text-center">{{order.OTsubject}}</view>
+						</view>
+						<view class="flex-twice">
+							<view class="text-center">{{order.OTweek}}</view>
+							<view class="text-center">{{order.OTtimeSlot}}</view>
+						</view>
+						
+					</view>
+				</view>
+			</view>
+		</view>
+
+	</view>
+
+	<mp-dialog title="登录" show="{{dialogShow}}" bindbuttontap="tapDialogButton" buttons="{{buttons}}">
+		<view>您还未登录，现在登录吗？</view>
+	</mp-dialog>
+
+	<mp-dialog title="登录" show="{{dialogShowOneButton}}" bindbuttontap="tapDialogOneButton" buttons="{{oneButton}}">
+		<view>登录信息已过期，请重新登录！</view>
+	</mp-dialog>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Index extends wepy.page {
+	config = {
+      usingComponents:{
+          "mp-dialog": "/miniprogram_npm/weui-miniprogram/dialog/dialog",
+          
+      
+      }
+    }
+
+	data = {
+		adminIconLogin:wepy.$instance.globalData.serverUrl + '/app/file/get_image?name=admin_login.png',
+		adminIconNoLogin:wepy.$instance.globalData.serverUrl + '/app/file/get_image?name=admin_no_login.png',
+		userInfo: null,
+		dialogShow: false,
+		dialogShowOneButton: false,
+		buttons: [{text: '稍后登录'}, {text: '确定'}],
+		oneButton: [{text: '确定'}],
+		orderTeacherList:[],
+	}
+
+	methods={
+        onClick(e) {
+            let self = this
+            wx.navigateTo({
+                url:e.currentTarget.dataset.url
+            })
+        },
+
+		onClickLogin() {
+			this.$navigate({url:"login"})
+		},
+
+		onClickOrder(e) {
+            let self = this
+            let orderId = e.currentTarget.dataset.id
+            wx.navigateTo({
+                url:"order/order-detail?otid="+self.orderTeacherList[orderId].OTid,
+                
+            })
+        },
+
+
+		tapDialogOneButton(e) {
+			let self = this
+			this.$navigate({url:"login"})
+			self.dialogShowOneButton = false
+		},
+
+		tapDialogButton(e) {
+			let self = this
+			if (e.detail.index == 1) {
+			this.$navigate({url:"login"})
+			}
+			self.dialogShow = false
+		},
+    }
+
+	getOrderTeacherData() {
+        let self = this
+        
+        wepy.request({
+                url:wepy.$instance.globalData.serverUrl + '/app/admin/get_order_teacher_list',
+                method:'GET',
+                header: wepy.$instance.setHeader(),
+                
+                success: function(res) {
+                    console.log(res)
+                    if (res.data.Code == 1){
+                        self.orderTeacherList = res.data.Data
+                        self.$apply()
+                    }
+                }
+            })
+    }
+
+	onLoad() {
+      let self = this
+      
+    }
+
+    onShow() {
+      
+      let self = this
+      if(wepy.$instance.globalData.userInfo!=null){
+        self.userInfo = wepy.$instance.globalData.userInfo
+		self.getOrderTeacherData()
+      }
+      if(self.userInfo==null && !self.dialogShowOneButton){
+        self.dialogShow = true
+      }
+
+
+    }
+}
+</script>

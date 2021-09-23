@@ -1,0 +1,81 @@
+<!-- login.wpy -->
+
+<style>
+
+</style>
+
+<template>
+    <view>
+        <view>账号</view>
+        <input class="input" data-name="username" @input="inputChange" value="{{ username }}" type="text" placeholder="请输入您的账号" />
+        <view>密码</view>
+        <input class="input" data-name="password" @input="inputChange" value="{{password}}" password = "true" type="safe-passward" placeholder="请输入您的密码" />
+        
+    </view>
+    <button type="primary" @tap="clickSubmit()">登录</button>
+    
+</template>
+
+<script>
+
+import wepy from 'wepy'
+export default class Login extends wepy.page{
+    config = {
+        usingComponents: {
+           
+        }
+    }
+
+    data={
+        userinfo:{
+            username: "",
+            password: "",
+        },
+        
+        
+    }
+
+    methods = {
+
+        clickSubmit(){
+            let self = this;
+            
+            wepy.request({
+                url:wepy.$instance.globalData.serverUrl + '/app/login/admin_login',
+                method:'GET',
+                data:{
+                    username:self.userinfo.username,
+                    password:self.userinfo.password
+                },
+                success: function(res) {
+                    console.log(res.data.Data["userinfo"])
+                    if(res.data.Code == 1) {
+                        
+                        if(res.data.Msg == "Admin login success!"){
+                            wepy.setStorageSync("sessionDate", Date.parse(new Date()))
+                            wepy.setStorageSync("sessionToken",res.data.Data["token"])
+                            wepy.setStorageSync("sessionUserInfo",res.data.Data["userinfo"])
+                            wepy.$instance.globalData.userInfo = res.data.Data["userinfo"]
+                            console.log("login success")
+                            self.$apply()
+                            wepy.navigateBack({url:"index"})
+                        }
+                    }
+                }
+            })
+        },
+
+
+        inputChange(e) {
+            let self = this
+            self.userinfo[e.currentTarget.dataset.name] = e.detail.value.trim()
+        },
+
+    }
+
+    onLoad() {
+
+
+    }
+}
+</script>

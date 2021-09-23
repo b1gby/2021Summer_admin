@@ -1,0 +1,81 @@
+
+<style>
+
+</style>
+
+<template>
+    <view class="cu-card">
+		<view class="cu-item shadow radius">
+            <view class="flex align-center padding">
+                <view class="flex-sub text-black text-xl text-bold">
+                    {{orderTeacher.OTcontactName}}
+                </view>
+                <view class="flex-twice text-black text-xl text-bold">
+                    {{orderTeacher.OTcontactPhone}}
+                </view>
+                
+            </view>
+            
+        </view>
+        
+        <view class="cu-item shadow radius">
+            <view class="text-black text-lg padding">
+                预约科目：{{orderTeacher.OTsubject}}
+            </view>
+            <view class="text-black text-lg padding">
+                预约时间：{{orderTeacher.OTweek}}
+                {{orderTeacher.OTtimeSlot}}
+            </view>
+            <view class="text-black text-lg padding">
+                预约地点：{{orderTeacher.OTaddress}}
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Teacher extends wepy.page{
+    data={
+        OTid: null,
+        orderTeacher: {},
+        
+    }
+
+    methods= {
+
+    }
+
+
+
+    getOrderTeacherData() {
+        let self = this
+        wepy.request({
+            url:wepy.$instance.globalData.serverUrl + '/app/admin/get_order_teacher',
+            method:'GET',
+            header: wepy.$instance.setHeader(),
+            data:{
+                OTid:self.OTid
+            },
+            success: function(res) {
+                console.log(res)
+                if (res.data.Code == 1){
+                    self.orderTeacher = res.data.Data
+                    
+                    self.$apply()
+                }
+            }
+        })
+    }
+
+    onLoad(options) {
+        let self = this
+
+        self.OTid = options.otid
+
+        self.getOrderTeacherData()
+        
+    }
+
+}
+</script>
