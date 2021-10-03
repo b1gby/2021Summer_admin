@@ -1,0 +1,98 @@
+
+<style>
+
+</style>
+
+<template>
+<form @submit="formSubmit">
+    <view class="flex bg-white align-center padding">
+        <view class="padding flex-sub">
+        </view>
+        <view class="padding flex-sub text-center text-black text-lg text-bold">
+            添加管理员
+        </view>
+        <view class="padding flex-sub text-right">
+            
+        </view>
+    </view>
+	<view class="cu-form-group">
+		<view class="title">用户名</view>
+		<input name="Aname" placeholder="请输入登录账号"></input>
+	</view>
+
+    <view class="cu-form-group">
+		<view class="title">密码</view>
+		<input name="Apassword" password placeholder="请输入密码"></input>
+	</view>
+
+    <view class="cu-form-group">
+		<view class="title">确认密码</view>
+		<input name="ApasswordAgain" password placeholder="请再次输入密码"></input>
+	</view>
+
+    <view class="padding flex justify-center bg-white">
+        <button class="cu-btn bg-green shadow lg" form-type="submit">添加管理员</button>
+    </view>
+</form>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Admin extends wepy.page{
+    data={
+        
+    }
+
+    methods= {
+        formSubmit(e) {
+            let self = this
+
+            let sendFormData = e.detail.value // form 表单数据
+
+            console.log(sendFormData)
+            wepy.request({
+                url:wepy.$instance.globalData.serverUrl + '/app/admin/insert_admin',
+                method:'POST',
+                data: sendFormData,
+                header: wepy.$instance.setHeader(),
+                success: function(res) {
+                    console.log(res)
+                    if (res.data.Code == 1){
+                        wx.showToast({
+                              title: '添加成功', //提示的内容,
+                              icon: 'success', //图标,
+                              mask: true, //显示透明蒙层，防止触摸穿透,
+                              success: res => {}
+                            });
+
+                    } else if(res.data.Code == 2){
+                        if(res.data.Msg == "Password not consistent!"){
+                            wx.showToast({
+                              title: '两次密码不一致', //提示的内容,
+                              icon: 'error', //图标,
+                              mask: true, //显示透明蒙层，防止触摸穿透,
+                              success: res => {}
+                            });
+                        } else if(res.data.Msg == "Username existed!"){
+                            wx.showToast({
+                              title: '用户名已存在', //提示的内容,
+                              icon: 'error', //图标,
+                              mask: true, //显示透明蒙层，防止触摸穿透,
+                              success: res => {}
+                            });
+                        }
+                    }
+                }
+            })
+            
+        },
+
+        
+    }
+
+
+    onLoad() {
+    }
+
+}
+</script>

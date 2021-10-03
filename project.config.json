@@ -1,7 +1,7 @@
 {
     "description": "A WePY project",
     "setting": {
-        "urlCheck": false,
+        "urlCheck": true,
         "es6": false,
         "enhance": false,
         "postcss": false,
@@ -36,7 +36,7 @@
         "showES6CompileOption": false
     },
     "compileType": "miniprogram",
-    "appid": "wx71b416886963ba75",
+    "appid": "wx3562a7201da82401",
     "projectname": "2021summer_admin",
     "miniprogramRoot": "dist/",
     "condition": {}

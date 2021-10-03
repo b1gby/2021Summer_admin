@@ -1,0 +1,72 @@
+<style>
+
+</style>
+
+<template>
+    <view class="flex bg-white align-center padding">
+        <button class="cu-btn bg-blue round shadow flex-sub" @tap="onClickCreateAdmin">
+            添加管理员
+        </button>
+        <view class="padding flex-sub text-center text-black text-lg text-bold">
+            管理员列表
+        </view>
+        <view class="padding flex-sub text-right">
+
+        </view>
+    </view>
+
+    <view wx:for="{{adminList}}" wx:key="index" wx:for-item="admin" data-id="{{index}}" @tap="onClickAdmin">
+        <view class="bg-white flex solid-bottom align-center">
+            <view class="flex-sub text-center text-bold text-lg margin">{{admin.Aname}}</view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Admin extends wepy.page{
+    data = {
+        adminList:[],
+        imgUrl:wepy.$instance.globalData.serverUrl + '/app/file/get_image?name=',
+    }
+    
+    methods = {
+        onClickAdmin(e) {
+            let self = this
+            let adminId = e.currentTarget.dataset.id
+            wx.navigateTo({
+                url:"admin-detail?aid="+self.adminList[adminId].Aid,
+                
+            })
+        },
+
+        onClickCreateAdmin(){
+            this.$navigate({url:"create-admin"})
+        },
+    }
+
+    getAdminData() {
+        let self = this
+        
+        wepy.request({
+                url:wepy.$instance.globalData.serverUrl + '/app/admin/get_admin_list',
+                method:'GET',
+                header: wepy.$instance.setHeader(),
+                
+                success: function(res) {
+                    console.log(res)
+                    if (res.data.Code == 1){
+                        self.adminList = res.data.Data
+                        self.$apply()
+                    }
+                }
+            })
+    }
+
+
+    onShow() {
+        let self = this
+        self.getAdminData()
+    }
+}
+</script>

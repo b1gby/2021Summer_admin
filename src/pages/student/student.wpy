@@ -3,10 +3,10 @@
 </style>
 
 <template>
-    <view class="flex bg-white">
-        <view class="padding flex-sub text-left" @tap="onClickCreateStudent">
+    <view class="flex bg-white align-center padding">
+        <button class="cu-btn bg-blue round shadow flex-sub" @tap="onClickCreateStudent">
             添加学生账号
-        </view>
+        </button>
         <view class="padding flex-sub text-center text-black text-lg text-bold">
             学生列表
         </view>
@@ -111,7 +111,7 @@ export default class Student extends wepy.page{
             let self = this
         
             wepy.request({
-                    url:wepy.$instance.globalData.serverUrl + '/app/user/common/search_student_admin',
+                    url:wepy.$instance.globalData.serverUrl + '/app/user/common/search_student_from_admin',
                     method:'GET',
                     header: wepy.$instance.setHeader(),
                     data:{

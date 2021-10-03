@@ -5,36 +5,44 @@
 <template>
 	<view class="cu-card">
 		<view class="cu-item shadow radius">
-			<view class="flex align-center" @tap="onClickLogin">
+			<view class="flex align-center">
 				<image style="width:50rpx;height:50rpx" class="margin margin-lr" src="{{userInfo==null?adminIconNoLogin:adminIconLogin}}" background-size="cover"/>
-				<view class="margin">
-                    <view class="text-black text-xl text-bold">管理员{{ userInfo==null?'未登录':userInfo.Aname}}</view>
-                </view>   
+				<view class="margin"  @tap="onClickLogin">
+                    <view class="text-black text-xl text-bold">管理员{{ userInfo==null?'未登录（点击登录）':userInfo.Aname}}</view>
+                </view>  
+				<view class="flex justify-center" wx:if="{{userInfo!=null}}">
+					<button class="cu-btn bg-red round shadow " @tap="onClickExitLogin">退出登录</button>
+				</view>
 			</view>
 		</view>
 		<view wx:if="{{userInfo!=null}}" class="cu-item margin-top-xl margin-bottom-xl">
             <view class="cu-list menu card-menuradius shadow">
-                <view class="cu-item arrow">
-                    <view class="content" data-url="student/student" @tap="onClick">
+                <view class="cu-item arrow" data-url="student/student" @tap="onClick">
+                    <view class="content">
                         <view>学生管理</view>
                     </view>
                 </view>
-                <view class="cu-item arrow">
-                    <view class="content" data-url="teacher/teacher" @tap="onClick">
+                <view class="cu-item arrow" data-url="teacher/teacher" @tap="onClick">
+                    <view class="content">
                         <view>老师管理</view>
                     </view>
                 </view>
-				<view class="cu-item arrow">
-                    <view class="content" data-url="campus/campus" @tap="onClick">
+				<view class="cu-item arrow" data-url="campus/campus" @tap="onClick">
+                    <view class="content">
                         <view>校区管理</view>
+                    </view>
+                </view>
+				<view class="cu-item arrow" data-url="admin/admin" @tap="onClick">
+                    <view class="content">
+                        <view>管理员管理</view>
                     </view>
                 </view>
             </view>
         </view>
-		<view wx:if="{{userInfo!=null}}" class="cu-item margin-top-xl margin-bottom-xl">
-			<view class="cu-item arrow">
+		<!-- <view wx:if="{{userInfo!=null}}" class="cu-item margin-top-xl margin-bottom-xl">
+			<view class="cu-item">
 				<view class="cu-list menu card-menuradius shadow">
-					<view class="cu-item arrow">
+					<view class="cu-item">
 						<view class="content">
 							<view>预约家教信息</view>
 						</view>
@@ -56,7 +64,7 @@
 					</view>
 				</view>
 			</view>
-		</view>
+		</view> -->
 
 	</view>
 
@@ -92,6 +100,28 @@ export default class Index extends wepy.page {
 	}
 
 	methods={
+		onClickExitLogin(){
+			let self = this
+			wx.showModal({
+                title: '退出登录',
+                content: '确定要退出登录吗？',
+                cancelText: '取消',
+                confirmText: '确定',
+                success: res => {
+					if (res.confirm) {
+						// 清除session缓存
+						wepy.removeStorageSync("sessionToken")
+						wepy.removeStorageSync("sessionDate")
+						wepy.removeStorageSync("sessionUserInfo")
+						console.log("remove session!")
+						wepy.$instance.onLaunch()
+						self.onShow()
+						self.$apply()
+					}
+				}
+			})
+        },
+
         onClick(e) {
             let self = this
             wx.navigateTo({
@@ -100,7 +130,10 @@ export default class Index extends wepy.page {
         },
 
 		onClickLogin() {
-			this.$navigate({url:"login"})
+			let self = this
+			if(self.userInfo==null){
+				this.$navigate({url:"login"})
+			}
 		},
 
 		onClickOrder(e) {
@@ -156,7 +189,9 @@ export default class Index extends wepy.page {
       let self = this
       if(wepy.$instance.globalData.userInfo!=null){
         self.userInfo = wepy.$instance.globalData.userInfo
-		self.getOrderTeacherData()
+		// self.getOrderTeacherData()
+      }else{
+        self.userInfo=null
       }
       if(self.userInfo==null && !self.dialogShowOneButton){
         self.dialogShow = true

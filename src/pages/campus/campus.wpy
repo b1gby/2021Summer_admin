@@ -167,7 +167,26 @@ export default class Index extends wepy.page{
                     console.log(res)
                     if (res.data.Code == 1){
                         console.log("Insert Campus Success!")
+                        wepy.showToast({
+                          title: '添加成功', //提示的内容,
+                          icon: 'success', //图标,
+                          duration: 2000, //延迟时间,
+                          mask: true, //显示透明蒙层，防止触摸穿透,
+                          success: res => {}
+                        });
+                        
                         self.getCampusData()
+                    } else if(res.data.Code == 2){
+                        if(res.data.Msg == "Campus exist!"){
+                            wepy.showToast({
+                                title: '不能添加相同校区', //提示的内容,
+                                icon: 'none', //图标,
+                                duration: 2000, //延迟时间,
+                                mask: true, //显示透明蒙层，防止触摸穿透,
+                                success: res => {}
+                            });
+                        }
+                        
                     }
                 }
             })
@@ -177,7 +196,7 @@ export default class Index extends wepy.page{
         let self = this
 
         wepy.request({
-                url:wepy.$instance.globalData.serverUrl + '/app/admin/edit_campus',
+                url:wepy.$instance.globalData.serverUrl + '/app/admin/update_campus',
                 method:'PUT',
                 header: wepy.$instance.setHeader(),
                 data: self.copyCampusList,
@@ -185,6 +204,14 @@ export default class Index extends wepy.page{
                     console.log(res)
                     if (res.data.Code == 1){
                         console.log("Edit Campus Success!")
+                        wepy.showToast({
+                          title: '修改成功', //提示的内容,
+                          icon: 'success', //图标,
+                          duration: 2000, //延迟时间,
+                          mask: true, //显示透明蒙层，防止触摸穿透,
+                          success: res => {}
+                        });
+                        
                         self.getCampusData()
                     }
                 }
@@ -202,6 +229,14 @@ export default class Index extends wepy.page{
                     console.log(res)
                     if (res.data.Code == 1){
                         console.log("Delete Campus Success!")
+                        wepy.showToast({
+                          title: '删除成功', //提示的内容,
+                          icon: 'success', //图标,
+                          duration: 2000, //延迟时间,
+                          mask: true, //显示透明蒙层，防止触摸穿透,
+                          success: res => {}
+                        });
+                        
                     }
                 }
             })

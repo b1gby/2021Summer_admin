@@ -30,7 +30,9 @@ export default class extends wepy.app {
       'pages/teacher/teacher-detail',
       'pages/campus/campus',
       'pages/order/order-detail',
-      
+      'pages/admin/admin',
+      'pages/admin/admin-detail',
+      'pages/admin/create-admin',
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -48,7 +50,7 @@ export default class extends wepy.app {
 
   globalData = {
     userInfo: null,
-    serverUrl: "http://1.116.126.208:8080",
+    serverUrl: "https://www.bigby.love:8080",
   }
 
   constructor () {
@@ -63,6 +65,8 @@ export default class extends wepy.app {
 
     if(wepy.getStorageSync("sessionUserInfo")){
       this.globalData.userInfo = wepy.getStorageSync("sessionUserInfo")
+    }else{
+      this.globalData.userInfo = null
     }
     
   }
