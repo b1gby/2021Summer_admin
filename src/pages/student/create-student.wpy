@@ -6,13 +6,8 @@
 <template>
 <form @submit="formSubmit">
     <view class="flex bg-white align-center padding">
-        <view class="padding flex-sub">
-        </view>
         <view class="padding flex-sub text-center text-black text-lg text-bold">
             添加学生账号
-        </view>
-        <view class="padding flex-sub text-right">
-            
         </view>
     </view>
 	<view class="cu-form-group">
