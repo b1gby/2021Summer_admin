@@ -1,0 +1,52 @@
+
+    <view class="flex bg-white align-center">
+        <view class="padding flex-sub text-left">
+            <button class="cu-btn bg-green shadow"  wx:if="{{isClickCreateCampus || isClickEditCampus}}" bindtap="onClickCancel">取消</button>
+        </view>
+        <view class="padding flex-sub text-center text-black text-lg text-bold">
+            校区列表
+        </view>
+        <view class="padding flex flex-sub justify-end">
+            <button class="cu-btn bg-green shadow"  wx:if="{{isClickCreateCampus || isClickEditCampus}}" bindtap="onClickSubmit">完成</button>
+        </view>
+    </view>
+
+    <view class="cu-card">
+        <view class="cu-item margin-top-xl margin-bottom-xl">
+            <view class="cu-list menu card-menuradius shadow">
+                <view class="cu-item flex align-center"  wx:for="{{campusList}}" wx:key="index" wx:for-item="campus" data-id="{{index}}">
+                    <view class="flex-sub">
+                        <mp-slideview buttons="{{slideButtons}}" bindbuttontap="slideButtonTap" data-id="{{index}}">
+                            <view class="text-center" wx:if="{{!isClickEditCampus}}">{{campus.Cname}}</view>
+                            <input class="text-center" wx:else bindinput="inputChange" value="{{campus.Cname}}" data-id="{{index}}"/>
+                        </mp-slideview>
+                    </view>
+                    
+                </view>
+                <view class="cu-item flex align-center"  wx:if="{{isClickCreateCampus}}">
+                    <input class="flex-sub text-center" bindinput="inputChangeCreateCampus" focus="{{isClickCreateCampus}}"/>
+                </view>
+            </view>
+        </view>
+
+        <block wx:if="{{!(isClickCreateCampus || isClickEditCampus)}}">
+            <view class="cu-item margin-top-xl margin-bottom-xl">
+                <view class="flex align-center">
+                    <button class="flex-sub text-center cu-btn bg-{{isClickCreateCampus?'grey':'green'}}" bindtap="onClickCreateCampus">添加校区</button>
+                </view>
+                
+            </view>
+
+            <view class="cu-item margin-top-xl margin-bottom-xl">
+                <view class="flex align-center">
+                    <button class="flex-sub text-center cu-btn bg-{{isClickEditCampus?'grey':'green'}}" bindtap="onClickEditCampus">编辑校区</button>
+                </view>
+                
+            </view>
+        </block>
+        
+    </view>
+
+    <mp-dialog title="删除校区" show="{{dialogShow}}" bindbuttontap="tapDeleteDialogButton" buttons="{{buttons}}" bindclose="dialogClose">
+      <view>确定要删除此条记录吗？</view>
+    </mp-dialog>

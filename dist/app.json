@@ -1,0 +1,30 @@
+{
+  "pages": [
+    "pages/index",
+    "pages/login",
+    "pages/student/student",
+    "pages/student/create-student",
+    "pages/student/student-detail",
+    "pages/teacher/teacher",
+    "pages/teacher/create-teacher",
+    "pages/teacher/teacher-detail",
+    "pages/campus/campus",
+    "pages/order/order-detail",
+    "pages/admin/admin",
+    "pages/admin/admin-detail",
+    "pages/admin/create-admin"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "useExtendedLib": {
+    "weui": true
+  },
+  "usingComponents": {
+    "cu-custom": "/colorui/components/cu-custom"
+  },
+  "sitemapLocation": "sitemap.json"
+}

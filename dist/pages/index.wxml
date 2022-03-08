@@ -1,0 +1,73 @@
+
+	<view class="cu-card">
+		<view class="cu-item shadow radius">
+			<view class="flex align-center">
+				<image style="width:50rpx;height:50rpx" class="margin margin-lr" src="{{userInfo==null?adminIconNoLogin:adminIconLogin}}" background-size="cover"/>
+				<view class="margin" bindtap="onClickLogin">
+                    <view class="text-black text-xl text-bold">管理员{{ userInfo==null?'未登录（点击登录）':userInfo.Aname}}</view>
+                </view>  
+				<view class="flex justify-center"  wx:if="{{userInfo!=null}}">
+					<button class="cu-btn bg-red round shadow " bindtap="onClickExitLogin">退出登录</button>
+				</view>
+			</view>
+		</view>
+		<view  wx:if="{{userInfo!=null}}" class="cu-item margin-top-xl margin-bottom-xl">
+            <view class="cu-list menu card-menuradius shadow">
+                <view class="cu-item arrow" data-url="student/student" bindtap="onClick">
+                    <view class="content">
+                        <view>学生管理</view>
+                    </view>
+                </view>
+                <view class="cu-item arrow" data-url="teacher/teacher" bindtap="onClick">
+                    <view class="content">
+                        <view>老师管理</view>
+                    </view>
+                </view>
+				<view class="cu-item arrow" data-url="campus/campus" bindtap="onClick">
+                    <view class="content">
+                        <view>校区管理</view>
+                    </view>
+                </view>
+				<view class="cu-item arrow" data-url="admin/admin" bindtap="onClick">
+                    <view class="content">
+                        <view>管理员管理</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+		<!-- <view wx:if="{{userInfo!=null}}" class="cu-item margin-top-xl margin-bottom-xl">
+			<view class="cu-item">
+				<view class="cu-list menu card-menuradius shadow">
+					<view class="cu-item">
+						<view class="content">
+							<view>预约家教信息</view>
+						</view>
+					</view>
+				</view>
+				<view class="cu-list menu card-menuradius shadow">
+					<view class="cu-item flex align-center" wx:for="{{orderTeacherList}}" wx:key="index" wx:for-item="order" data-id="{{index}}" bindtap="onClickOrder">
+						<view class="flex-sub">
+							<view class="text-center">{{order.OTcontactName}}</view>
+						</view>
+						<view class="flex-sub">
+							<view class="text-center">{{order.OTsubject}}</view>
+						</view>
+						<view class="flex-twice">
+							<view class="text-center">{{order.OTweek}}</view>
+							<view class="text-center">{{order.OTtimeSlot}}</view>
+						</view>
+						
+					</view>
+				</view>
+			</view>
+		</view> -->
+
+	</view>
+
+	<mp-dialog title="登录" show="{{dialogShow}}" bindbuttontap="tapDialogButton" buttons="{{buttons}}">
+		<view>您还未登录，现在登录吗？</view>
+	</mp-dialog>
+
+	<mp-dialog title="登录" show="{{dialogShowOneButton}}" bindbuttontap="tapDialogOneButton" buttons="{{oneButton}}">
+		<view>登录信息已过期，请重新登录！</view>
+	</mp-dialog>

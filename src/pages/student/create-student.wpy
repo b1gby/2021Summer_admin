@@ -62,7 +62,7 @@
 		<view class="title">年级</view>
         <picker bindchange="pickerGradeChange" name="SgradeName" value="{{gradePicker[gradeIndex]}}" range="{{gradePicker}}">
 			<view class="picker">
-				<text class="text-lg">{{gradeIndex?gradePicker[gradeIndex]:'请选择年级'}}</text>
+				<text class="text-lg">{{gradeIndex?gradePicker[gradeIndex]:gradePicker[0]}}</text>
 			</view>
 		</picker>
 	</view>
@@ -84,6 +84,7 @@
 
 <script>
 import wepy from 'wepy'
+import WxValidate from "../../utils/WxValidate"
 export default class Student extends wepy.page{
     data={
         imgList: [],
@@ -161,6 +162,19 @@ export default class Student extends wepy.page{
 
             let sendFormData = e.detail.value // form 表单数据
 
+            if (!self.WxValidate.checkForm(sendFormData)) {
+                
+                //表单元素验证不通过，此处给出相应提示
+                let error = self.WxValidate.errorList[0];
+                wx.showToast({
+                            title: error.msg, //提示的内容,
+                            icon: 'none', //图标,
+                            mask: true, //显示透明蒙层，防止触摸穿透,
+                            success: res => {}
+                            });
+                    return false;
+            }
+
             if(self.imgList.length>0){
                 let lastindex = self.imgList[0].lastIndexOf("/")
                 sendFormData['Sicon'] = self.imgList.length == 0? "" : "user_avatar/" + self.imgList[0].substring(lastindex + 1, self.imgList[0].length)
@@ -217,6 +231,40 @@ export default class Student extends wepy.page{
         },
 
         
+    }
+
+    initValidate() {
+        let rules = {
+            Sname: {
+                required: true,
+                maxlength: 10
+            },
+            Snickname: {
+                required: true,
+                maxlength: 10
+            },
+            Sphone: {
+                required: true,
+                tel: true
+            }
+        }
+
+        let message = {
+            Sname: {
+                required: '请输入您的用户名',
+                maxlength: '用户名不能超过10个字'
+            },
+            Snickname: {
+                required: '请输入您的昵称',
+                maxlength: '昵称不能超过10个字'
+            },
+            Sphone: {
+                required: '请输入您的手机号',
+                maxlength: '请输入正确的手机号'
+            }
+        }
+        //实例化当前的验证规则和提示消息
+        this.WxValidate = new WxValidate(rules, message);
     }
 
     getCampusData() {
@@ -278,6 +326,7 @@ export default class Student extends wepy.page{
     onLoad() {
         let self = this
         self.getCampusData()
+        self.initValidate();
     }
 
 }

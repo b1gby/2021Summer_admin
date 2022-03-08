@@ -96,7 +96,7 @@ export default class Student extends wepy.page{
         Sid: null,
         student: {},
         imgList: [],
-        gradePicker:['七年级','八年级','九年级','高一','高二','高三'],
+        gradePicker:['小学','七年级','八年级','九年级','高一','高二','高三','大学'],
         gradeIndex:null,
         campusList:[],
         campusNameList:[],

@@ -67,6 +67,7 @@
 
 <script>
 import wepy from 'wepy'
+import WxValidate from "../../utils/WxValidate"
 export default class Teacher extends wepy.page{
     data={
         imgList: [],
@@ -122,6 +123,19 @@ export default class Teacher extends wepy.page{
             let length = self.imgList.length; //总数
 
             let sendFormData = e.detail.value // form 表单数据
+
+            if (!self.WxValidate.checkForm(sendFormData)) {
+                
+                //表单元素验证不通过，此处给出相应提示
+                let error = self.WxValidate.errorList[0];
+                wx.showToast({
+                            title: error.msg, //提示的内容,
+                            icon: 'none', //图标,
+                            mask: true, //显示透明蒙层，防止触摸穿透,
+                            success: res => {}
+                            });
+                    return false;
+            }
 
             if(self.imgList.length>0){
                 let lastindex = self.imgList[0].lastIndexOf("/")
@@ -181,6 +195,40 @@ export default class Teacher extends wepy.page{
         
     }
 
+    initValidate() {
+        let rules = {
+            Tname: {
+                required: true,
+                maxlength: 10
+            },
+            Tnickname: {
+                required: true,
+                maxlength: 10
+            },
+            Tphone: {
+                required: true,
+                tel: true
+            }
+        }
+
+        let message = {
+            Tname: {
+                required: '请输入您的用户名',
+                maxlength: '用户名不能超过10个字'
+            },
+            Tnickname: {
+                required: '请输入您的昵称',
+                maxlength: '昵称不能超过10个字'
+            },
+            Tphone: {
+                required: '请输入您的手机号',
+                maxlength: '请输入正确的手机号'
+            }
+        }
+        //实例化当前的验证规则和提示消息
+        this.WxValidate = new WxValidate(rules, message);
+    }
+
 
     // 递归方式上传多张图片
     recursionImgUpload(self,imgPaths, successUp, failUp, count, length){
@@ -219,6 +267,7 @@ export default class Teacher extends wepy.page{
 
     onLoad() {
         let self = this
+        self.initValidate();
     }
 
 }
