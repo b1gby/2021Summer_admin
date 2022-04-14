@@ -112,5 +112,43 @@ export default class extends wepy.app {
     };
     return header
   }
+
+  wxApiPromisify(fn){
+      return function(){
+          return new Promise((resolve, reject) => {
+                let arg = arguments[0] || {};
+                arg.success = resolve;
+                arg.fail = reject;
+                fn(arg);
+          });
+      }
+  }
+  requestPromise = this.wxApiPromisify(wx.request)
+    requestWithConfirmAndResult(confirmConfig, requestConfig, resultConfig){
+        let confirmModal = wx.showModal(confirmConfig);
+        confirmModal.then((res) => {
+            if(res.confirm){
+                wepy.$instance.requestPromise(requestConfig).then((res) => {
+                    if(res.statusCode !== 200){
+                        return Promise.reject(res);
+                    }
+                    requestConfig.successCallback.call(requestConfig.successThisArg || this, res);
+                    wepy.showToast({
+                        title: resultConfig.successTitle,
+                        icon: 'success',
+                        duration: 2000,
+                        mask: true,
+                    });
+                }).catch(() => {
+                    wepy.showToast({
+                        title: resultConfig.failTitle,
+                        icon: 'error',
+                        duration: 2000,
+                        mask: true,
+                    })
+                });
+            }
+        })
+    }
 }
 </script>
